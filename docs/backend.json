@@ -1,0 +1,72 @@
+
+{
+  "entities": {
+    "Student": {
+      "title": "Student",
+      "type": "object",
+      "description": "Represents a student enrolled in the TechXera Campus.",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "enrollmentDate": { "type": "string", "format": "date-time" },
+        "isApproved": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] }
+      },
+      "required": ["id", "studentId", "firstName", "lastName", "email", "isApproved", "status"]
+    },
+    "AttendanceSession": {
+      "title": "AttendanceSession",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "className": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "startTime": { "type": "string" },
+        "endTime": { "type": "string" },
+        "description": { "type": "string" },
+        "dynamicToken": { "type": "string" },
+        "status": { "type": "string", "enum": ["upcoming", "active", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "className", "date", "startTime", "endTime", "status"]
+    },
+    "AttendanceRecord": {
+      "title": "AttendanceRecord",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sessionId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentUid": { "type": "string" },
+        "studentName": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "tokenUsed": { "type": "string" },
+        "status": { "type": "string", "enum": ["present", "late"] }
+      },
+      "required": ["sessionId", "studentId", "studentUid", "timestamp"]
+    }
+  },
+  "auth": {
+    "providers": ["password"]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/students/{studentUid}",
+        "definition": { "entityName": "Student" }
+      },
+      {
+        "path": "/sessions/{sessionId}",
+        "definition": { "entityName": "AttendanceSession" }
+      },
+      {
+        "path": "/attendance/{attendanceId}",
+        "definition": { "entityName": "AttendanceRecord" }
+      }
+    ]
+  }
+}

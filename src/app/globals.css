@@ -1,0 +1,107 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Day Mode - Nature Green & Cream Palette */
+    /* #FBF5DD=48 79% 93% | #E7E1B1=53 53% 80% | #306D29=114 45% 29% | #0D530E=121 73% 19% */
+    --background: 48 79% 93%;        /* #FBF5DD - warm cream */
+    --foreground: 121 73% 9%;        /* very dark green text */
+    --card: 48 60% 97%;              /* near-white cream card */
+    --card-foreground: 121 73% 9%;
+    --popover: 48 79% 97%;
+    --popover-foreground: 121 73% 9%;
+    --primary: 114 45% 29%;          /* #306D29 - forest green */
+    --primary-foreground: 48 79% 96%;
+    --secondary: 121 73% 19%;        /* #0D530E - deep green */
+    --secondary-foreground: 48 79% 96%;
+    --muted: 53 53% 80%;             /* #E7E1B1 - warm beige */
+    --muted-foreground: 114 25% 32%;
+    --accent: 114 40% 38%;           /* mid-range forest green accent */
+    --accent-foreground: 48 79% 96%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 53 30% 73%;
+    --input: 53 30% 73%;
+    --ring: 114 45% 29%;
+    --radius: 1.5rem;
+  }
+
+  .dark {
+    /* Night Mode - Charcoal & Crimson Palette */
+    /* #171717=0 0% 9% | #444444=0 0% 27% | #DA0037=345 100% 43% | #EDEDED=0 0% 93% */
+    --background: 0 0% 9%;           /* #171717 - near black */
+    --foreground: 0 0% 93%;          /* #EDEDED - light gray */
+    --card: 0 0% 14%;
+    --card-foreground: 0 0% 93%;
+    --popover: 0 0% 14%;
+    --popover-foreground: 0 0% 93%;
+    --primary: 345 100% 43%;         /* #DA0037 - vivid crimson */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 27%;           /* #444444 - dark gray */
+    --secondary-foreground: 0 0% 93%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 63%;
+    --accent: 345 100% 50%;          /* brighter crimson accent */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 345 100% 35%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 27%;              /* #444444 */
+    --input: 0 0% 27%;
+    --ring: 345 100% 43%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body selection:bg-primary/30 antialiased transition-colors duration-300;
+    -webkit-tap-highlight-color: transparent;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-headline tracking-tight;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-card/40 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+  .tech-grid {
+    background-image: linear-gradient(to right, rgba(48, 109, 41, 0.06) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(48, 109, 41, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .dark .tech-grid {
+    background-image: linear-gradient(to right, rgba(218, 0, 55, 0.07) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(218, 0, 55, 0.07) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+/* Fix for mobile height issues */
+.min-h-screen {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
