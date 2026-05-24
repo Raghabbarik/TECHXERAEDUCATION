@@ -180,9 +180,15 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1, ease: "easeOut" }}
-                src={settings?.trustTeamImageUrl || "https://picsum.photos/seed/techteam/1400/600"} 
+                src={settings?.trustTeamImageUrl || "/team-placeholder.png"} 
                 alt="Our Team"
                 className="w-full max-w-7xl object-contain object-bottom h-[350px]"
+                onError={(e) => {
+                  const img = e.currentTarget;
+                  if (!img.src.endsWith('/team-placeholder.png')) {
+                    img.src = '/team-placeholder.png';
+                  }
+                }}
               />
             </div>
 

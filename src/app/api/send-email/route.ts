@@ -17,11 +17,18 @@ function isValidEmail(email: string): boolean {
 
 export async function POST(req: NextRequest) {
   try {
-    // ── Origin check: only allow requests from same origin ──
+    // ── Origin check: parse properly to avoid false 403s on Vercel ──
     const origin = req.headers.get('origin') || ''
     const host = req.headers.get('host') || ''
-    if (origin && !origin.includes(host.split(':')[0])) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    if (origin) {
+      try {
+        const originHost = new URL(origin).host  // strips https:// correctly
+        if (originHost !== host) {
+          return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        }
+      } catch {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      }
     }
 
     const body = await req.json()
@@ -64,16 +71,20 @@ export async function POST(req: NextRequest) {
     const fromName = process.env.EMAIL_FROM_NAME || 'TechXera Campus'
 
     if (!emailUser || !emailPass) {
+      console.error('[send-email] Missing EMAIL_USER or EMAIL_PASS — set them in Vercel Environment Variables')
       return NextResponse.json(
-        { error: 'Email credentials not configured.' },
+        { error: 'Email credentials not configured. Add EMAIL_USER and EMAIL_PASS in Vercel → Settings → Environment Variables.' },
         { status: 500 }
       )
     }
 
-    // ── Create transporter ──
+    // ── Explicit SMTP config (more reliable on Vercel serverless than service:'gmail') ──
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
       auth: { user: emailUser, pass: emailPass },
+      tls: { rejectUnauthorized: true },
     })
 
     // ── HTML template ──
@@ -123,15 +134,26 @@ export async function POST(req: NextRequest) {
 
     const sent = results.filter(r => r.status === 'fulfilled').length
     const failed = results.filter(r => r.status === 'rejected').length
+    const errors = results
+      .filter((r): r is PromiseRejectedResult => r.status === 'rejected')
+      .map(r => r.reason?.message || 'Unknown error')
+
+    if (errors.length > 0) {
+      console.error('[send-email] Some emails failed:', errors)
+    }
 
     return NextResponse.json({
       success: true,
       sent,
       failed,
       message: `Email sent to ${sent} recipient(s)${failed > 0 ? `, ${failed} failed` : ''}`,
+      ...(failed > 0 && { errors }),
     })
   } catch (error: any) {
-    console.error('Email send error:', error)
-    return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
+    console.error('[send-email] Unhandled error:', error)
+    return NextResponse.json(
+      { error: 'Failed to send email', details: error?.message },
+      { status: 500 }
+    )
   }
 }
