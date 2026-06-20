@@ -66,15 +66,15 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Check credentials ──
-    const emailUser = smtpUser || process.env.EMAIL_USER
-    const emailPass = smtpPass || process.env.EMAIL_PASS
-    const fromName = customFromName || process.env.EMAIL_FROM_NAME || 'TechXera Campus'
+    const emailUser = smtpUser
+    const emailPass = smtpPass
+    const fromName = customFromName || 'TechXera Campus'
 
     if (!emailUser || !emailPass) {
-      console.error('[send-email] Missing EMAIL_USER or EMAIL_PASS — set them in Vercel Environment Variables')
+      console.error('[send-email] Missing SMTP credentials from client payload')
       return NextResponse.json(
-        { error: 'Email credentials not configured. Add EMAIL_USER and EMAIL_PASS in Vercel → Settings → Environment Variables.' },
-        { status: 500 }
+        { error: 'Email credentials not provided. Please enter From Email and App Password.' },
+        { status: 400 }
       )
     }
 

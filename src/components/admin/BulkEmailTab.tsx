@@ -107,6 +107,10 @@ export default function BulkEmailTab() {
       toast({ variant: 'destructive', title: 'Missing Info', description: 'Please enter a subject and message body.' })
       return
     }
+    if (!smtpUser || !smtpPass) {
+      toast({ variant: 'destructive', title: 'Missing Credentials', description: 'Please enter your From Email and App Password to send emails.' })
+      return
+    }
 
     const allRecipients = new Set<string>()
 
@@ -245,24 +249,22 @@ export default function BulkEmailTab() {
           <CardContent className="pt-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Auth Email (Optional Override)</Label>
+                <Label>From Email (Gmail)</Label>
                 <Input 
                   placeholder="admin@techxera.com" 
                   value={smtpUser}
                   onChange={e => setSmtpUser(e.target.value)}
                   className="bg-background/50 h-10 rounded-xl"
-                  disabled={!hasRecipients}
                 />
               </div>
               <div className="space-y-2">
-                <Label>App Password (Optional)</Label>
+                <Label>App Password</Label>
                 <Input 
                   type="password"
                   placeholder="xxxx xxxx xxxx xxxx" 
                   value={smtpPass}
                   onChange={e => setSmtpPass(e.target.value)}
                   className="bg-background/50 h-10 rounded-xl"
-                  disabled={!hasRecipients}
                 />
               </div>
             </div>

@@ -30,8 +30,14 @@ export default function AttendancePage() {
   }, [])
 
   const teacherRef = useMemoFirebase(() => (user && db ? doc(db, 'teachers', user.uid) : null), [user, db])
-  const { data: teacherProfile, isLoading: isProfileLoading } = useDoc(teacherRef)
-  const isAdmin = teacherProfile?.role === 'admin';
+  const { data: teacherProfile, isLoading: isTeacherLoading } = useDoc(teacherRef)
+  
+  const studentRef = useMemoFirebase(() => (user && db ? doc(db, 'students', user.uid) : null), [user, db])
+  const { data: studentProfile, isLoading: isStudentLoading } = useDoc(studentRef)
+
+  const profile = studentProfile || teacherProfile
+  const isProfileLoading = isTeacherLoading || isStudentLoading
+  const isAdmin = teacherProfile?.role === 'admin' || user?.email?.toLowerCase() === 'rraghabbarik@gmail.com'
 
   // Fetch all class sessions to determine total count
   const sessionsQuery = useMemoFirebase(() => (db ? collection(db, 'sessions') : null), [db])

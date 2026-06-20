@@ -258,6 +258,8 @@ export default function AdminPage() {
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([])
   const [msgSubject, setMsgSubject] = useState('')
   const [msgBody, setMsgBody] = useState('')
+  const [msgSmtpUser, setMsgSmtpUser] = useState('')
+  const [msgSmtpPass, setMsgSmtpPass] = useState('')
   const [isSendingMsg, setIsSendingMsg] = useState(false)
   const [expandedMsgId, setExpandedMsgId] = useState<string | null>(null)
 
@@ -1015,6 +1017,10 @@ export default function AdminPage() {
       toast({ variant: 'destructive', title: 'Incomplete', description: 'Select recipients and write a message.' })
       return
     }
+    if (!msgSmtpUser || !msgSmtpPass) {
+      toast({ variant: 'destructive', title: 'Missing Credentials', description: 'Please enter your From Email and App Password.' })
+      return
+    }
     setIsSendingMsg(true)
     const recipients = (allStudents || []).filter((s: any) => selectedRecipients.includes(s.id))
     const emails = recipients.map((s: any) => s.email).filter(Boolean)
@@ -1029,7 +1035,13 @@ export default function AdminPage() {
       const res = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ to: emails, subject: msgSubject, body: msgBody }),
+        body: JSON.stringify({ 
+          to: emails, 
+          subject: msgSubject, 
+          body: msgBody,
+          smtpUser: msgSmtpUser,
+          smtpPass: msgSmtpPass
+        }),
       })
       const data = await res.json()
 
@@ -2840,10 +2852,24 @@ export default function AdminPage() {
                   {/* Right: Compose */}
                   <div className="space-y-5">
                     <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Compose Message</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-xs font-semibold text-muted-foreground">From Email (Gmail) *</Label>
+                        <Input placeholder="admin@techxera.com"
+                          value={msgSmtpUser} onChange={e => setMsgSmtpUser(e.target.value)}
+                          className="h-12 rounded-2xl bg-background/50" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-xs font-semibold text-muted-foreground">App Password *</Label>
+                        <Input type="password" placeholder="xxxx xxxx xxxx xxxx"
+                          value={msgSmtpPass} onChange={e => setMsgSmtpPass(e.target.value)}
+                          className="h-12 rounded-2xl bg-background/50" />
+                      </div>
+                    </div>
 
                     <div className="space-y-2">
-                      <Label className="text-xs font-semibold text-muted-foreground">Subject (optional)</Label>
-                      <Input placeholder="e.g. Important Exam Notice"
+                      <Label className="text-xs font-semibold text-muted-foreground">Message Subject *</Label>
+                      <Input placeholder="Welcome to TechXera!"
                         value={msgSubject} onChange={e => setMsgSubject(e.target.value)}
                         className="h-12 rounded-2xl bg-background/50" />
                     </div>
