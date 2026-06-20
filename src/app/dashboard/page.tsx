@@ -56,11 +56,7 @@ export default function DashboardPage() {
     setMounted(true)
   }, [])
 
-  useEffect(() => {
-    if (!isUserLoading && !isProfileLoading && teacherProfile?.role === 'admin') {
-      router.push('/admin')
-    }
-  }, [teacherProfile, isUserLoading, isProfileLoading, router])
+
 
   const studentRef = useMemoFirebase(() => (user && db ? doc(db, 'students', user.uid) : null), [user, db])
   const { data: studentProfile, isLoading: isStudentLoading } = useDoc(studentRef)
@@ -71,6 +67,12 @@ export default function DashboardPage() {
   const profile = studentProfile || teacherProfile
   const isProfileLoading = isStudentLoading || isTeacherLoading
 
+  useEffect(() => {
+    const isAdmin = teacherProfile?.role === 'admin' || auth?.currentUser?.email?.toLowerCase() === 'rraghabbarik@gmail.com';
+    if (!isUserLoading && !isProfileLoading && isAdmin) {
+      router.push('/admin');
+    }
+  }, [teacherProfile, isUserLoading, isProfileLoading, router, auth]);
   const resultsQuery = useMemoFirebase(() => (user && profile?.isApproved && db ? collection(db, 'students', user.uid, 'results') : null), [user, profile, db])
   const { data: results, isLoading: isResultsLoading } = useCollection(resultsQuery)
 
