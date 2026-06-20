@@ -41,7 +41,6 @@ import { errorEmitter } from '@/firebase/error-emitter'
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors'
 import { cn } from '@/lib/utils'
 
-const AUTHORIZED_ADMIN_EMAIL = 'rraghabbarik@gmail.com'
 
 function StudentGradeAction({ student, examId, onEdit, db }: { student: any, examId: string, onEdit: (student: any, existingGrade: any) => void, db: any }) {
   const resultRef = useMemoFirebase(() => (db && student.id && examId ? doc(db, 'students', student.id, 'results', examId) : null), [db, student.id, examId]);
@@ -286,7 +285,7 @@ export default function AdminPage() {
   const teacherDocRef = useMemoFirebase(() => (db && user ? doc(db, 'teachers', user.uid) : null), [db, user])
   const { data: teacherData } = useDoc(teacherDocRef)
 
-  const isAuthorizedAdmin = user?.email?.toLowerCase() === AUTHORIZED_ADMIN_EMAIL.toLowerCase() || teacherData?.role === 'admin'
+  const isAuthorizedAdmin = teacherData?.role === 'admin'
 
   useEffect(() => {
     if (mounted && !isUserLoading && teacherData !== undefined) {

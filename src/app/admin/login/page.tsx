@@ -17,7 +17,6 @@ import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
 import { doc } from 'firebase/firestore'
 
-const AUTHORIZED_ADMIN_EMAIL = 'rraghabbarik@gmail.com'
 
 function AdminLoginForm() {
   const [email, setEmail] = useState('')
@@ -33,9 +32,12 @@ function AdminLoginForm() {
   const settingsRef = useMemoFirebase(() => (db ? doc(db, 'settings', 'site-config') : null), [db])
   const { data: settings } = useDoc(settingsRef)
 
+  const teacherRef = useMemoFirebase(() => (db && user ? doc(db, 'teachers', user.uid) : null), [db, user])
+  const { data: teacherProfile } = useDoc(teacherRef)
+
   useEffect(() => {
     if (!isUserLoading && user) {
-      if (user.email === AUTHORIZED_ADMIN_EMAIL) {
+      if (teacherProfile?.role === 'admin') {
         router.push('/admin')
       } else {
         toast({
@@ -45,9 +47,9 @@ function AdminLoginForm() {
         })
       }
     }
-  }, [user, isUserLoading, router, toast])
+  }, [user, isUserLoading, teacherProfile, router, toast])
 
-  if (isUserLoading || (user && user.email === AUTHORIZED_ADMIN_EMAIL)) {
+  if (isUserLoading || (user && teacherProfile?.role === 'admin')) {
     return (
       <div className="flex flex-col items-center justify-center p-12 space-y-4">
         <Loader2 className="animate-spin text-primary" size={48} />
@@ -59,15 +61,6 @@ function AdminLoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isLoading) return;
-
-    if (email.toLowerCase() !== AUTHORIZED_ADMIN_EMAIL) {
-      toast({
-        variant: "destructive",
-        title: "Restricted Access",
-        description: "Only the root administrator email is permitted.",
-      })
-      return;
-    }
 
     setIsLoading(true)
     try {

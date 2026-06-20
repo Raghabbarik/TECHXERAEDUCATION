@@ -23,7 +23,6 @@ import SplitText from '@/components/SplitText'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 
-const AUTHORIZED_ADMIN_EMAIL = 'rraghabbarik@gmail.com'
 
 const container = {
   hidden: { opacity: 0 },
@@ -58,10 +57,10 @@ export default function DashboardPage() {
   }, [])
 
   useEffect(() => {
-    if (!isUserLoading && user?.email?.toLowerCase() === AUTHORIZED_ADMIN_EMAIL.toLowerCase()) {
+    if (!isUserLoading && !isProfileLoading && teacherProfile?.role === 'admin') {
       router.push('/admin')
     }
-  }, [user, isUserLoading, router])
+  }, [teacherProfile, isUserLoading, isProfileLoading, router])
 
   const studentRef = useMemoFirebase(() => (user && db ? doc(db, 'students', user.uid) : null), [user, db])
   const { data: studentProfile, isLoading: isStudentLoading } = useDoc(studentRef)
@@ -155,7 +154,7 @@ export default function DashboardPage() {
     )
   }
 
-  if (!user || user.email?.toLowerCase() === AUTHORIZED_ADMIN_EMAIL.toLowerCase()) return null
+  if (!user) return null
 
   if (!profile && !isProfileLoading) {
     return (

@@ -17,7 +17,6 @@ import SplitText from '@/components/SplitText'
 import { QRCodeSVG } from 'qrcode.react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
-const AUTHORIZED_ADMIN_EMAIL = 'rraghabbarik@gmail.com'
 
 export default function AttendancePage() {
   const [mounted, setMounted] = useState(false)
@@ -30,10 +29,9 @@ export default function AttendancePage() {
     setMounted(true)
   }, [])
 
-  const studentRef = useMemoFirebase(() => (user && db ? doc(db, 'students', user.uid) : null), [user, db])
-  const { data: profile, isLoading: isProfileLoading } = useDoc(studentRef)
-
-  const isAdmin = user?.email?.toLowerCase() === AUTHORIZED_ADMIN_EMAIL.toLowerCase();
+  const teacherRef = useMemoFirebase(() => (user && db ? doc(db, 'teachers', user.uid) : null), [user, db])
+  const { data: teacherProfile, isLoading: isProfileLoading } = useDoc(teacherRef)
+  const isAdmin = teacherProfile?.role === 'admin';
 
   // Fetch all class sessions to determine total count
   const sessionsQuery = useMemoFirebase(() => (db ? collection(db, 'sessions') : null), [db])

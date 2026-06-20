@@ -38,7 +38,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 
-const AUTHORIZED_ADMIN_EMAIL = 'rraghabbarik@gmail.com'
 
 /**
  * TechXeraLogo - Displays the campus logo. 
@@ -105,7 +104,7 @@ export default function Navbar() {
   const teacherDocRef = useMemoFirebase(() => (db && user ? doc(db, 'teachers', user.uid) : null), [db, user])
   const { data: teacherData } = useDoc(teacherDocRef)
 
-  const isAdmin = user?.email?.toLowerCase() === AUTHORIZED_ADMIN_EMAIL.toLowerCase() || teacherData?.role === 'admin'
+  const isAdmin = teacherData?.role === 'admin'
 
   const settingsRef = useMemoFirebase(() => (db ? doc(db, 'settings', 'site-config') : null), [db])
   const { data: settings } = useDoc(settingsRef)

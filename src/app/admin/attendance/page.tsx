@@ -27,7 +27,6 @@ import { errorEmitter } from '@/firebase/error-emitter'
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors'
 import Link from 'next/link'
 
-const AUTHORIZED_ADMIN_EMAIL = 'rraghabbarik@gmail.com'
 
 export default function AdminAttendancePage() {
   const [mounted, setMounted] = useState(false)
@@ -49,7 +48,7 @@ export default function AdminAttendancePage() {
 
   const teacherDocRef = useMemoFirebase(() => (db && user ? doc(db, 'teachers', user.uid) : null), [db, user])
   const { data: teacherData } = useDoc(teacherDocRef)
-  const isAuthorizedAdmin = user?.email?.toLowerCase() === AUTHORIZED_ADMIN_EMAIL.toLowerCase() || teacherData?.role === 'admin'
+  const isAuthorizedAdmin = teacherData?.role === 'admin'
 
   useEffect(() => {
     setMounted(true)

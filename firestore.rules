@@ -7,11 +7,9 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && (
-        request.auth.token.email.lower() == 'rraghabbarik@gmail.com' ||
+      return isSignedIn() &&
         exists(/databases/$(database)/documents/teachers/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/teachers/$(request.auth.uid)).data.role == 'admin'
-      );
+        get(/databases/$(database)/documents/teachers/$(request.auth.uid)).data.role == 'admin';
     }
 
     function isTeacher() {

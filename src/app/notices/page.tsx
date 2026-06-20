@@ -14,7 +14,6 @@ import SplitText from '@/components/SplitText'
 import { TechXeraLogo } from '@/components/Navbar'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
-const AUTHORIZED_ADMIN_EMAIL = 'rraghabbarik@gmail.com'
 
 export default function NoticesPage() {
   const [mounted, setMounted] = useState(false)
@@ -26,11 +25,9 @@ export default function NoticesPage() {
     setMounted(true)
   }, [])
 
-  // Fetch student profile for approval check
-  const studentRef = useMemoFirebase(() => (user && db ? doc(db, 'students', user.uid) : null), [user, db])
-  const { data: profile, isLoading: isProfileLoading } = useDoc(studentRef)
-
-  const isAdmin = user?.email?.toLowerCase() === AUTHORIZED_ADMIN_EMAIL.toLowerCase();
+  const teacherRef = useMemoFirebase(() => (user && db ? doc(db, 'teachers', user.uid) : null), [user, db])
+  const { data: teacherProfile, isLoading: isProfileLoading } = useDoc(teacherRef)
+  const isAdmin = teacherProfile?.role === 'admin';
 
   useEffect(() => {
     if (mounted && !isUserLoading && !user) {

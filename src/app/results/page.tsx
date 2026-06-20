@@ -18,7 +18,6 @@ import { useToast } from '@/hooks/use-toast'
 import SplitText from '@/components/SplitText'
 import { TechXeraLogo } from '@/components/Navbar'
 
-const AUTHORIZED_ADMIN_EMAIL = 'rraghabbarik@gmail.com'
 
 export default function ResultsLookupPage() {
   const [mounted, setMounted] = useState(false)
@@ -41,11 +40,9 @@ export default function ResultsLookupPage() {
     setMounted(true)
   }, [])
 
-  // Fetch student profile for approval check
-  const studentRef = useMemoFirebase(() => (user && db ? doc(db, 'students', user.uid) : null), [user, db])
-  const { data: profile, isLoading: isProfileLoading } = useDoc(studentRef)
-
-  const isAdmin = user?.email?.toLowerCase() === AUTHORIZED_ADMIN_EMAIL.toLowerCase();
+  const teacherRef = useMemoFirebase(() => (user && db ? doc(db, 'teachers', user.uid) : null), [user, db])
+  const { data: teacherProfile } = useDoc(teacherRef)
+  const isAdmin = teacherProfile?.role === 'admin';
 
   useEffect(() => {
     if (mounted && !isUserLoading && !user) {

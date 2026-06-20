@@ -18,7 +18,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
 import { safeErrorMessage, safeRedirect } from '@/lib/security'
 
-const AUTHORIZED_ADMIN_EMAIL = 'rraghabbarik@gmail.com'
 
 function LoginForm() {
   const [email, setEmail] = useState('')
@@ -39,22 +38,24 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const { toast } = useToast()
 
-  // Validate redirect URL — prevent open redirect attacks
   const rawRedirect = searchParams.get('redirect') || '/'
   const redirectTo = safeRedirect(rawRedirect, '/dashboard')
 
   const settingsRef = useMemoFirebase(() => (db ? doc(db, 'settings', 'site-config') : null), [db])
   const { data: settings } = useDoc(settingsRef)
 
+  const teacherRef = useMemoFirebase(() => (db && user ? doc(db, 'teachers', user.uid) : null), [db, user])
+  const { data: teacherProfile } = useDoc(teacherRef)
+
   useEffect(() => {
     if (!isUserLoading && user) {
-      if (user.email === AUTHORIZED_ADMIN_EMAIL) {
+      if (teacherProfile?.role === 'admin') {
         router.push('/admin')
       } else {
         router.push(redirectTo)
       }
     }
-  }, [user, isUserLoading, router, redirectTo])
+  }, [user, isUserLoading, teacherProfile, router, redirectTo])
 
   if (isUserLoading || user) {
     return (
@@ -69,7 +70,8 @@ function LoginForm() {
     e.preventDefault();
     if (isLoading) return;
 
-    if (email.toLowerCase() === AUTHORIZED_ADMIN_EMAIL.toLowerCase()) {
+    // Admin account should use the admin login portal
+    if (teacherProfile?.role === 'admin') {
       toast({
         variant: "destructive",
         title: "Admin Account Restricted",
