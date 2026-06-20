@@ -11,8 +11,8 @@ import { collection, query, orderBy, doc } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
 import SplitText from '@/components/SplitText'
-import ScrollStack, { ScrollStackItem } from '@/components/ScrollStack'
 import { TechXeraLogo } from '@/components/Navbar'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
 const AUTHORIZED_ADMIN_EMAIL = 'rraghabbarik@gmail.com'
 
@@ -100,42 +100,73 @@ export default function NoticesPage() {
             <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Loading updates...</p>
           </div>
         ) : notices && notices.length > 0 ? (
-          <div className="h-[80vh] w-full rounded-[3rem] overflow-hidden border border-border/40 bg-white/30 backdrop-blur-sm shadow-inner relative">
-            <ScrollStack useWindowScroll={false} blurAmount={2} className="bg-transparent">
-              {notices.map((notice) => (
-                <ScrollStackItem 
-                  key={notice.id} 
-                  itemClassName={`border-l-8 ${notice.isUrgent ? 'border-l-destructive' : 'border-l-primary'} bg-white !h-64`}
-                >
-                  <div className="flex flex-col h-full">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex items-center gap-3">
-                        <Badge className={`text-[10px] py-1 px-4 uppercase tracking-widest font-black ${notice.isUrgent ? 'bg-destructive text-white' : 'bg-primary text-white'}`}>
+          <div className="flex flex-col gap-6">
+            {notices.map((notice) => (
+              <Dialog key={notice.id}>
+                <DialogTrigger asChild>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`cursor-pointer text-left p-6 md:p-8 rounded-[2rem] border-l-8 ${notice.isUrgent ? 'border-l-destructive' : 'border-l-primary'} bg-white shadow-sm border border-border/40 hover:shadow-md transition-all duration-300 relative group`}
+                  >
+                    <div className="flex flex-col h-full relative z-10">
+                      <div className="flex justify-between items-start mb-6">
+                        <div className="flex items-center gap-3">
+                          <Badge className={`text-xs py-1.5 px-4 uppercase tracking-widest font-black ${notice.isUrgent ? 'bg-destructive text-white' : 'bg-primary text-white'}`}>
+                            {notice.isUrgent ? 'Urgent' : 'Official'}
+                          </Badge>
+                          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+                            <Calendar size={16} /> {notice.publishDate ? format(new Date(notice.publishDate), 'MMM d, yyyy') : 'N/A'}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-4 md:gap-6 flex-1">
+                        <div className={`hidden sm:flex shrink-0 w-14 h-14 rounded-2xl items-center justify-center ${notice.isUrgent ? 'bg-destructive/10 text-destructive' : 'bg-primary/10 text-primary'}`}>
+                          {notice.isUrgent ? <AlertCircle size={28} /> : <Info size={28} />}
+                        </div>
+                        <div className="space-y-4 flex-1">
+                          <h3 className="text-2xl md:text-3xl font-headline font-bold tracking-tight text-foreground group-hover:text-primary transition-colors">{notice.title}</h3>
+                          <p className="text-muted-foreground leading-relaxed text-sm md:text-base font-medium line-clamp-2">{notice.description}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-6 pt-4 border-t border-border/40 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 text-right">
+                        Click to read full notice &rarr;
+                      </div>
+                    </div>
+                  </motion.div>
+                </DialogTrigger>
+                
+                <DialogContent className="max-w-3xl rounded-[2rem] p-0 overflow-hidden border-0 shadow-2xl">
+                  <div className={`h-4 w-full ${notice.isUrgent ? 'bg-destructive' : 'bg-primary'}`}></div>
+                  <div className="p-8 md:p-12 space-y-8 max-h-[80vh] overflow-y-auto">
+                    <DialogHeader className="space-y-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Badge className={`text-xs py-1.5 px-4 uppercase tracking-widest font-black ${notice.isUrgent ? 'bg-destructive text-white' : 'bg-primary text-white'}`}>
                           {notice.isUrgent ? 'Urgent' : 'Official'}
                         </Badge>
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
-                          <Calendar size={14} /> {notice.publishDate ? format(new Date(notice.publishDate), 'MMM d, yyyy') : 'N/A'}
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+                          <Calendar size={16} /> {notice.publishDate ? format(new Date(notice.publishDate), 'MMM d, yyyy') : 'N/A'}
                         </span>
                       </div>
+                      <DialogTitle className="text-3xl md:text-4xl font-headline font-bold leading-tight">
+                        {notice.title}
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="prose prose-slate max-w-none">
+                      <p className="text-foreground leading-relaxed text-base md:text-lg font-medium whitespace-pre-wrap">
+                        {notice.description}
+                      </p>
                     </div>
-                    
-                    <div className="flex gap-4 flex-1 overflow-hidden">
-                      <div className={`hidden sm:flex shrink-0 w-12 h-12 rounded-[1rem] items-center justify-center ${notice.isUrgent ? 'bg-destructive/10 text-destructive' : 'bg-primary/10 text-primary'}`}>
-                        {notice.isUrgent ? <AlertCircle size={24} /> : <Info size={24} />}
-                      </div>
-                      <div className="space-y-2 flex-1 overflow-hidden">
-                        <h3 className="text-2xl md:text-3xl font-headline font-bold tracking-tight line-clamp-1">{notice.title}</h3>
-                        <p className="text-muted-foreground leading-relaxed text-sm md:text-base font-medium line-clamp-3">{notice.description}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4 pt-4 border-t border-border/40 text-[9px] font-black uppercase tracking-widest text-primary/40 text-right">
-                      TechXera Communication Hub
+                    <div className="pt-8 border-t border-border/40 flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                      <span>TechXera Communication Hub</span>
+                      <span className="text-primary">{notice.isUrgent ? 'Urgent Notice' : 'Official Notice'}</span>
                     </div>
                   </div>
-                </ScrollStackItem>
-              ))}
-            </ScrollStack>
+                </DialogContent>
+              </Dialog>
+            ))}
           </div>
         ) : (
           <div className="text-center py-24 text-muted-foreground border-2 border-dashed rounded-[3rem] bg-white/30 backdrop-blur-sm">

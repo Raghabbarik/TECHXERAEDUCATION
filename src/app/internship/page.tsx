@@ -126,22 +126,57 @@ function InternshipContent({ internshipId, db }: { internshipId: string; db: any
                             {/* Video embed */}
                             {item.type === 'video' && item.url && (
                               <div className="mt-2">
-                                {item.url.includes('youtube.com') || item.url.includes('youtu.be') ? (
-                                  <div className="rounded-xl overflow-hidden aspect-video bg-black">
-                                    <iframe
-                                      src={item.url.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')}
-                                      className="w-full h-full"
-                                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                      allowFullScreen
-                                    />
-                                  </div>
-                                ) : (
-                                  <a href={item.url} target="_blank" rel="noopener noreferrer">
-                                    <Button size="sm" className="rounded-xl gap-2 bg-blue-500 hover:bg-blue-600 text-white">
-                                      <Play size={14} /> Watch Video
-                                    </Button>
-                                  </a>
-                                )}
+                                {(() => {
+                                  const url = item.url;
+                                  let embedUrl = '';
+                                  let isDirectVideo = url.toLowerCase().endsWith('.mp4') || url.toLowerCase().endsWith('.webm');
+                                  
+                                  // Robust YouTube ID extraction
+                                  const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+                                  if (ytMatch && ytMatch[1]) {
+                                    embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}`;
+                                  } else if (url.includes('drive.google.com') || url.includes('docs.google.com/video')) {
+                                    embedUrl = url.replace(/\/view.*$/, '/preview').replace(/\/edit.*$/, '/preview');
+                                  }
+
+                                  if (isDirectVideo) {
+                                    return (
+                                      <div className="rounded-xl overflow-hidden aspect-video bg-black">
+                                        <video src={url} controls className="w-full h-full" />
+                                      </div>
+                                    );
+                                  } else if (embedUrl) {
+                                    return (
+                                      <div className="space-y-2 mt-2">
+                                        <div className="rounded-xl overflow-hidden aspect-video bg-black">
+                                          <iframe
+                                            src={embedUrl}
+                                            className="w-full h-full"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                          />
+                                        </div>
+                                        {/* Fallback button if iframe is blocked by X-Frame-Options or embedding is disabled */}
+                                        <div className="flex justify-end">
+                                          <a href={url} target="_blank" rel="noopener noreferrer">
+                                            <Button size="sm" variant="outline" className="rounded-xl gap-2 text-xs">
+                                              <ExternalLink size={12} /> Open in New Tab
+                                            </Button>
+                                          </a>
+                                        </div>
+                                      </div>
+                                    );
+                                  } else {
+                                    // Fallback for other video links
+                                    return (
+                                      <a href={url} target="_blank" rel="noopener noreferrer">
+                                        <Button size="sm" className="rounded-xl gap-2 bg-blue-500 hover:bg-blue-600 text-white">
+                                          <Play size={14} /> Watch Video
+                                        </Button>
+                                      </a>
+                                    );
+                                  }
+                                })()}
                               </div>
                             )}
                             {/* File/Record download */}

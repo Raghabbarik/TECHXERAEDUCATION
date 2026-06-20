@@ -14,6 +14,8 @@ import LogoLoop, { type LogoItem } from '@/components/LogoLoop'
 import SplitText from '@/components/SplitText'
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase'
 import { doc } from 'firebase/firestore'
+import InnovationSection from '@/components/InnovationSection'
+import TestimonialsSection from '@/components/TestimonialsSection'
 
 const NextJsIcon = () => (
   <svg width="24" height="24" viewBox="0 0 128 128" fill="currentColor">
@@ -127,8 +129,16 @@ export default function Home() {
             <p className="max-w-2xl mx-auto text-lg md:text-xl text-muted-foreground/80 mb-10 leading-relaxed font-medium">{heroDesc}</p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-16">
-              <Link href="/login" className="w-full sm:w-auto"><Button size="lg" className="w-full sm:w-auto h-16 px-6 sm:px-10 bg-primary text-white hover:bg-primary/90 rounded-2xl text-lg font-bold shadow-2xl shadow-primary/40 transition-all hover:scale-105 active:scale-95">Get Started <ArrowRight className="ml-2" size={18} /></Button></Link>
-              <Link href="/results" className="w-full sm:w-auto"><Button size="lg" variant="outline" className="w-full sm:w-auto h-16 px-6 sm:px-10 border-2 border-primary/20 rounded-2xl text-lg font-bold hover:bg-white/50 backdrop-blur-sm transition-all">Check Results</Button></Link>
+              <Link href="/login" className="w-full sm:w-auto">
+                <Button className="w-full sm:w-auto h-12 px-5 sm:px-6 bg-primary text-white hover:bg-primary/90 rounded-2xl text-sm sm:text-base font-bold shadow-2xl shadow-primary/40 transition-all hover:scale-105 active:scale-95">
+                  Get Started <ArrowRight className="ml-2" size={16} />
+                </Button>
+              </Link>
+              <Link href="#" className="w-full sm:w-auto">
+                <Button variant="outline" className="w-full sm:w-auto h-12 px-5 sm:px-6 border-2 border-primary/20 rounded-2xl text-sm sm:text-base font-bold hover:bg-white/50 backdrop-blur-sm transition-all">
+                  Partner With Us
+                </Button>
+              </Link>
             </div>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="relative py-12 px-6 bg-white/10 backdrop-blur-md rounded-[3rem] border border-white/20 shadow-xl overflow-hidden">
@@ -137,6 +147,9 @@ export default function Home() {
             </motion.div>
           </motion.div>
         </section>
+
+        {/* Innovation Section */}
+        <InnovationSection />
 
         {/* Features Section */}
         <section className="py-24 px-6 bg-white/30">
@@ -247,6 +260,9 @@ export default function Home() {
             </div>
           </section>
         )}
+
+        {/* Testimonials Section */}
+        <TestimonialsSection />
 
         {/* Support CTA Section */}
         <section className="py-12 md:py-16 px-6">

@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { to, subject, body: msgBody } = body
+    const { to, subject, body: msgBody, fromName: customFromName, replyTo, fromEmail, smtpUser, smtpPass } = body
 
     // ── Validate required fields ──
     if (!to || !msgBody) {
@@ -66,9 +66,9 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Check credentials ──
-    const emailUser = process.env.EMAIL_USER
-    const emailPass = process.env.EMAIL_PASS
-    const fromName = process.env.EMAIL_FROM_NAME || 'TechXera Campus'
+    const emailUser = smtpUser || process.env.EMAIL_USER
+    const emailPass = smtpPass || process.env.EMAIL_PASS
+    const fromName = customFromName || process.env.EMAIL_FROM_NAME || 'TechXera Campus'
 
     if (!emailUser || !emailPass) {
       console.error('[send-email] Missing EMAIL_USER or EMAIL_PASS — set them in Vercel Environment Variables')
@@ -123,7 +123,8 @@ export async function POST(req: NextRequest) {
     const results = await Promise.allSettled(
       toList.map((email: string) =>
         transporter.sendMail({
-          from: `"${fromName}" <${emailUser}>`,
+          from: `"${fromName}" <${fromEmail || emailUser}>`,
+          replyTo: replyTo || emailUser,
           to: email,
           subject: cleanSubject,
           html: htmlBody,

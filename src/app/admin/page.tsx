@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+import BulkEmailTab from '@/components/admin/BulkEmailTab'
 import { 
   Shield, GraduationCap, Users, CheckCircle, 
   Search, ClipboardList, Settings as SettingsIcon, 
@@ -92,7 +93,67 @@ export default function AdminPage() {
     trustScore: 90,
     trustRatingsCount: '1,548',
     trustDescription: 'Get help from our friendly supporters! Our support team answers your questions by email or directly from your student hub.',
-    trustPartnerLogos: ''
+    trustPartnerLogos: '',
+    innovationTitle: 'In innovation, one size does not fit all',
+    innovationSubtitle: 'Transform your enterprise with the platform that drives a 73% boost in product adoption and reduces innovation costs by up to 90%. Innovate effortlessly with our network of 7 million innovators to bring solutions to market faster.',
+    innovationTabs: JSON.stringify([
+      { title: "Innovation Challenges", desc: "Run corporate challenges & hackathons to develop innovative solutions that will transform your business.", details: "Provide more details about Innovation Challenges here..." },
+      { title: "Product Evangelism", desc: "Ignite customer excitement and drive product adoption through strategic evangelism. Join hosts seeing a 73% boost in adoption rates.", details: "Provide more details about Product Evangelism here..." },
+      { title: "Startup Pitches", desc: "Find the best startups in your industry to partner with and co-develop innovative...", details: "Provide more details about Startup Pitches here..." },
+      { title: "Student Challenges", desc: "Explore innovative ideas from student minds.", details: "Provide more details about Student Challenges here..." },
+      { title: "Recruitment", desc: "Connect with students globally to identify the brightest young minds and their...", details: "Provide more details about Recruitment here..." },
+      { title: "Internal hackathon", desc: "Empower your workforce to drive change! Gather employee insights and...", details: "Provide more details about Internal hackathon here..." }
+    ]),
+    testimonialsData: JSON.stringify([
+      { name: "Nancy Hwang", role: "Head of Customer Experience, Google", text: "Team brings a ton of understanding of developer basis...", avatarUrl: "https://i.pravatar.cc/150?img=1", logoUrl: "/google-logo.png" },
+      { name: "Kavita Aroor", role: "Head of Developer Marketing, APJ", text: "Great Coordination & Execution! Great team work! Overall a great show!", avatarUrl: "https://i.pravatar.cc/150?img=2", logoUrl: "/intel-logo.png" },
+      { name: "Monali Guha Thakurta", role: "Developer Marketing Manager, APAC", text: "Hack2skill's global reach ensured efficient outreach across multiple countries...", avatarUrl: "https://i.pravatar.cc/150?img=3", logoUrl: "/google-logo.png" }
+    ])
+  })
+
+  const getParsedInnovationTabs = () => {
+    try {
+      return JSON.parse(landingPageForm.innovationTabs);
+    } catch {
+      return [];
+    }
+  };
+
+  const handleInnovationTabChange = (idx: number, field: string, value: string) => {
+    const tabs = getParsedInnovationTabs();
+    if (!tabs[idx]) tabs[idx] = {};
+    tabs[idx][field] = value;
+    setLandingPageForm({...landingPageForm, innovationTabs: JSON.stringify(tabs)});
+  };
+
+  const getParsedTestimonials = () => {
+    try { return JSON.parse(landingPageForm.testimonialsData); } catch { return []; }
+  };
+  const handleTestimonialChange = (idx: number, field: string, value: string) => {
+    const arr = getParsedTestimonials();
+    if (!arr[idx]) arr[idx] = {};
+    arr[idx][field] = value;
+    setLandingPageForm({...landingPageForm, testimonialsData: JSON.stringify(arr)});
+  };
+  const addTestimonial = () => {
+    const arr = getParsedTestimonials();
+    arr.push({ name: "", role: "", text: "", avatarUrl: "", logoUrl: "" });
+    setLandingPageForm({...landingPageForm, testimonialsData: JSON.stringify(arr)});
+  };
+  const removeTestimonial = (idx: number) => {
+    const arr = getParsedTestimonials();
+    arr.splice(idx, 1);
+    setLandingPageForm({...landingPageForm, testimonialsData: JSON.stringify(arr)});
+  };
+
+  const [isVideoDialogOpen, setIsVideoDialogOpen] = useState(false)
+  const [editingVideo, setEditingVideo] = useState<any | null>(null)
+  const [videoForm, setVideoForm] = useState({
+    title: '',
+    subject: '',
+    description: '',
+    videoType: 'youtube',
+    videoUrl: ''
   })
 
   const [isMaterialDialogOpen, setIsMaterialDialogOpen] = useState(false)
@@ -206,6 +267,7 @@ export default function AdminPage() {
   const [teacherSearch, setTeacherSearch] = useState('')
   const [internshipSearch, setInternshipSearch] = useState('')
   const [supportSearch, setSupportSearch] = useState('')
+  const [videoSearch, setVideoSearch] = useState('')
   const [materialSearch, setMaterialSearch] = useState('')
   const [roadmapSearch, setRoadmapSearch] = useState('')
   const [assignStudentSearch, setAssignStudentSearch] = useState('')
@@ -255,7 +317,22 @@ export default function AdminPage() {
         trustScore: dbSettings.trustScore || 90,
         trustRatingsCount: dbSettings.trustRatingsCount || '1,548',
         trustDescription: dbSettings.trustDescription || 'Get help from our friendly supporters! Our support team answers your questions by email or directly from your student hub.',
-        trustPartnerLogos: dbSettings.trustPartnerLogos || ''
+        trustPartnerLogos: dbSettings.trustPartnerLogos || '',
+        innovationTitle: dbSettings.innovationTitle || 'In innovation, one size does not fit all',
+        innovationSubtitle: dbSettings.innovationSubtitle || 'Transform your enterprise with the platform that drives a 73% boost in product adoption and reduces innovation costs by up to 90%. Innovate effortlessly with our network of 7 million innovators to bring solutions to market faster.',
+        innovationTabs: dbSettings.innovationTabs || JSON.stringify([
+          { title: "Innovation Challenges", desc: "Run corporate challenges & hackathons to develop innovative solutions that will transform your business.", details: "Provide more details about Innovation Challenges here..." },
+          { title: "Product Evangelism", desc: "Ignite customer excitement and drive product adoption through strategic evangelism. Join hosts seeing a 73% boost in adoption rates.", details: "Provide more details about Product Evangelism here..." },
+          { title: "Startup Pitches", desc: "Find the best startups in your industry to partner with and co-develop innovative...", details: "Provide more details about Startup Pitches here..." },
+          { title: "Student Challenges", desc: "Explore innovative ideas from student minds.", details: "Provide more details about Student Challenges here..." },
+          { title: "Recruitment", desc: "Connect with students globally to identify the brightest young minds and their...", details: "Provide more details about Recruitment here..." },
+          { title: "Internal hackathon", desc: "Empower your workforce to drive change! Gather employee insights and...", details: "Provide more details about Internal hackathon here..." }
+        ]),
+        testimonialsData: dbSettings.testimonialsData || JSON.stringify([
+          { name: "Nancy Hwang", role: "Head of Customer Experience, Google", text: "Team brings a ton of understanding of developer basis...", avatarUrl: "https://i.pravatar.cc/150?img=1", logoUrl: "/google-logo.png" },
+          { name: "Kavita Aroor", role: "Head of Developer Marketing, APJ", text: "Great Coordination & Execution! Great team work! Overall a great show!", avatarUrl: "https://i.pravatar.cc/150?img=2", logoUrl: "/intel-logo.png" },
+          { name: "Monali Guha Thakurta", role: "Developer Marketing Manager, APAC", text: "Hack2skill's global reach ensured efficient outreach across multiple countries...", avatarUrl: "https://i.pravatar.cc/150?img=3", logoUrl: "/google-logo.png" }
+        ])
       })
     }
   }, [dbSettings])
@@ -283,6 +360,9 @@ export default function AdminPage() {
 
   const noticesQuery = useMemoFirebase(() => (db && isAuthorizedAdmin ? query(collection(db, 'notices'), orderBy('publishDate', 'desc')) : null), [db, isAuthorizedAdmin])
   const { data: allNotices } = useCollection(noticesQuery)
+
+  const videosQuery = useMemoFirebase(() => (db && isAuthorizedAdmin ? query(collection(db, 'videos'), orderBy('uploadDate', 'desc')) : null), [db, isAuthorizedAdmin])
+  const { data: allVideos } = useCollection(videosQuery)
 
   const materialsQuery = useMemoFirebase(() => (db && isAuthorizedAdmin ? query(collection(db, 'studyMaterials'), orderBy('uploadDate', 'desc')) : null), [db, isAuthorizedAdmin])
   const { data: allMaterials } = useCollection(materialsQuery)
@@ -331,6 +411,13 @@ export default function AdminPage() {
       `${s.name || ''} ${s.email || ''} ${s.subject || ''} ${s.message || ''}`.toLowerCase().includes(supportSearch.toLowerCase())
     )
   }, [supportInquiries, supportSearch])
+
+
+  const filteredVideos = React.useMemo(() => {
+    return (allVideos || []).filter((v: any) =>
+      `${v.title || ''} ${v.subject || ''} ${v.description || ''}`.toLowerCase().includes(videoSearch.toLowerCase())
+    )
+  }, [allVideos, videoSearch])
 
   const filteredMaterials = React.useMemo(() => {
     return (allMaterials || []).filter((m: any) =>
@@ -676,6 +763,58 @@ export default function AdminPage() {
       })
   }
 
+  const handleSaveVideo = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!db) return
+
+    const id = editingVideo?.id || Math.random().toString(36).substring(2, 9)
+    const payload = {
+      ...videoForm,
+      id,
+      uploadDate: editingVideo?.uploadDate || new Date().toISOString()
+    }
+
+    const docRef = doc(db, 'videos', id)
+    setDoc(docRef, payload, { merge: true })
+      .then(() => {
+        toast({ title: editingVideo ? "Video Updated" : "Video Added" })
+        setIsVideoDialogOpen(false)
+        setEditingVideo(null)
+        setVideoForm({ title: '', subject: '', description: '', videoType: 'youtube', videoUrl: '' })
+      })
+      .catch(async (error) => {
+        const permissionError = new FirestorePermissionError({
+          path: docRef.path,
+          operation: editingVideo ? 'update' : 'create',
+          requestResourceData: payload,
+        } as SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+      })
+  }
+
+  const handleEditVideo = (video: any) => {
+    setEditingVideo(video)
+    setVideoForm({
+      title: video.title,
+      subject: video.subject,
+      description: video.description || '',
+      videoType: video.videoType || 'youtube',
+      videoUrl: video.videoUrl || video.youtubeLink || ''
+    })
+    setIsVideoDialogOpen(true)
+  }
+
+  const handleDeleteVideo = async (id: string) => {
+    if (!db) return
+    if (!confirm("Permanently remove this video?")) return
+    try {
+      await deleteDoc(doc(db, 'videos', id))
+      toast({ title: "Video Removed" })
+    } catch (err: any) {
+      toast({ variant: "destructive", title: "Error", description: err.message })
+    }
+  }
+
   const handleCreateExam = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!db) return
@@ -1013,6 +1152,10 @@ export default function AdminPage() {
       setEditingMaterial(null)
       setMaterialForm({ title: '', subject: '', semester: 'Semester 1', materialType: 'Notes', fileUrl: '', thumbnailUrl: '' })
       setIsMaterialDialogOpen(true)
+    } else if (activeTab === 'videos') {
+      setEditingVideo(null)
+      setVideoForm({ title: '', subject: '', description: '', videoType: 'youtube', videoUrl: '' })
+      setIsVideoDialogOpen(true)
     } else if (activeTab === 'notices') {
       setEditingNotice(null)
       setNoticeForm({ title: '', description: '', isUrgent: false })
@@ -1154,30 +1297,30 @@ export default function AdminPage() {
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
       <TechBackground />
       
-      <header className="w-full px-4 md:px-12 pt-12 pb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 z-10">
-        <div className="flex items-center gap-4 md:gap-6">
-          <TechXeraLogo className="w-16 h-16 md:w-20 md:h-20 shadow-2xl shadow-primary/20" customUrl={dbSettings?.logoUrl} />
-          <div className="space-y-1">
-            <h1 className="text-3xl md:text-5xl font-headline font-bold tracking-tighter">Admin Central</h1>
+      <header className="w-full px-4 md:px-8 pt-6 pb-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 z-10">
+        <div className="flex items-center gap-3 md:gap-4">
+          <TechXeraLogo className="w-12 h-12 md:w-14 md:h-14 shadow-xl shadow-primary/20" customUrl={dbSettings?.logoUrl} />
+          <div className="space-y-0.5">
+            <h1 className="text-2xl md:text-3xl font-headline font-bold tracking-tighter">Admin Central</h1>
             <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full w-fit">
-              <Shield size={12} className="text-primary" />
-              <p className="text-primary font-bold text-[8px] md:text-[10px] uppercase tracking-widest truncate max-w-[150px] md:max-w-none">ROOT: {user.email}</p>
+              <Shield size={10} className="text-primary" />
+              <p className="text-primary font-bold text-[8px] md:text-[9px] uppercase tracking-widest truncate max-w-[150px] md:max-w-none">ROOT: {user.email}</p>
             </div>
           </div>
         </div>
         
         <div className="flex items-center gap-3 w-full md:w-auto">
           <Link href="/" className="flex-1 md:flex-none">
-            <Button variant="outline" className="w-full h-12 md:h-14 px-4 md:px-8 rounded-2xl font-bold bg-white/50 backdrop-blur-md shadow-sm border-2">
-              <Home className="mr-2" size={18} /> Portal Home
+            <Button variant="outline" className="w-full h-10 md:h-10 px-4 md:px-6 rounded-xl font-bold bg-white/50 backdrop-blur-md shadow-sm border-2">
+              <Home className="mr-2" size={16} /> Portal Home
             </Button>
           </Link>
           {showGlobalCreate && (
             <Button 
               onClick={handleGlobalCreate}
-              className="h-12 md:h-14 px-4 md:px-8 rounded-2xl font-bold bg-primary text-white shadow-xl shadow-primary/20 hover:bg-primary/90 flex-1 md:flex-none"
+              className="h-10 md:h-10 px-4 md:px-6 rounded-xl font-bold bg-primary text-white shadow-xl shadow-primary/20 hover:bg-primary/90 flex-1 md:flex-none"
             >
-              <Plus className="mr-2" size={18} /> 
+              <Plus className="mr-2" size={16} /> 
               <span className="hidden xs:inline">
                 {activeTab === 'repository' ? 'New Material' : 
                  activeTab === 'notices' ? 'New Notice' : 
@@ -1186,16 +1329,16 @@ export default function AdminPage() {
               <span className="xs:hidden">Create</span>
             </Button>
           )}
-          <Button onClick={handleLogout} variant="ghost" size="icon" className="h-12 w-12 md:h-14 md:w-14 rounded-2xl font-bold text-destructive hover:bg-destructive/10">
-            <LogOut size={20} />
+          <Button onClick={handleLogout} variant="ghost" size="icon" className="h-10 w-10 md:h-10 md:w-10 rounded-xl font-bold text-destructive hover:bg-destructive/10">
+            <LogOut size={18} />
           </Button>
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-12 pb-32 space-y-8 z-10 overflow-hidden">
+      <main className="flex-1 w-full px-4 md:px-8 pb-32 space-y-6 z-10 overflow-hidden">
         <Tabs value={activeTab} className="w-full" onValueChange={setActiveTab}>
-          <div className="bg-white/80 dark:bg-card/40 backdrop-blur-xl rounded-[2rem] md:rounded-[2.5rem] p-2 md:p-3 shadow-xl mb-8 md:mb-12 border border-white/20 overflow-x-auto scrollbar-hide">
-            <TabsList className="bg-transparent flex flex-nowrap justify-start lg:justify-center h-auto gap-1 md:gap-2 border-none min-w-max">
+          <div className="bg-white/80 dark:bg-card/40 backdrop-blur-xl rounded-2xl md:rounded-3xl p-1.5 md:p-2 shadow-sm mb-6 border border-white/20 overflow-x-auto scrollbar-hide">
+            <TabsList className="bg-transparent flex flex-nowrap justify-start lg:justify-center h-auto gap-1 md:gap-1.5 border-none min-w-max">
               {[
                 { id: 'overview', label: 'Overview', icon: <Layout size={16} /> },
                 { id: 'results', label: 'Results', icon: <GraduationCap size={16} /> },
@@ -1207,10 +1350,12 @@ export default function AdminPage() {
                 { id: 'certificates', label: 'Certificates', icon: <Award size={16} /> },
                 { id: 'challenges', label: 'Challenges', icon: <Zap size={16} /> },
                 { id: 'projects', label: 'Projects', icon: <Code size={16} /> },
+                                { id: 'videos', label: 'Videos', icon: <Video size={16} /> },
                 { id: 'notices', label: 'Notices', icon: <Bell size={16} /> },
                 { id: 'repository', label: 'Repository', icon: <BookOpen size={16} /> },
                 { id: 'roadmaps', label: 'Roadmaps', icon: <Map size={16} /> },
                 { id: 'messages', label: 'Send Message', icon: <MessageSquare size={16} /> },
+                { id: 'bulk-email', label: 'Bulk Email', icon: <Mail size={16} /> },
                 { id: 'internship', label: 'Internship', icon: <Briefcase size={16} /> },
                 { id: 'landing', label: 'Landing Page', icon: <Layout size={16} /> },
                 { id: 'branding', label: 'Branding', icon: <SettingsIcon size={16} /> },
@@ -2087,6 +2232,79 @@ export default function AdminPage() {
                 </div>
               </TabsContent>
 
+<TabsContent value="videos" className="mt-0 space-y-8 md:space-y-12">
+                <div className="space-y-6 md:space-y-8">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <h3 className="text-xl md:text-2xl font-headline font-bold flex items-center gap-3">
+                      <Video className="text-primary" /> Video Lectures
+                    </h3>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+                        <Input 
+                          placeholder="Search videos..." 
+                          value={videoSearch}
+                          onChange={(e) => setVideoSearch(e.target.value)}
+                          className="pl-10 h-12 rounded-xl bg-background/50 border-2 w-full sm:w-[250px]"
+                        />
+                      </div>
+                      <Button onClick={() => {
+                        setEditingVideo(null)
+                        setVideoForm({ title: '', subject: '', description: '', videoType: 'youtube', videoUrl: '' })
+                        setIsVideoDialogOpen(true)
+                      }} className="h-12 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 px-6 shadow-xl shadow-primary/20">
+                        <Plus size={16} className="mr-2" /> Upload Video
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredVideos?.map((video: any) => (
+                      <Card key={video.id} className="border-none rounded-[2rem] bg-background/50 hover:bg-background/80 transition-all shadow-lg overflow-hidden group">
+                        <div className="h-40 w-full overflow-hidden bg-primary/10 relative">
+                          {(video.videoUrl || video.youtubeLink) ? (
+                            (video.videoType === 'youtube' || video.youtubeLink) ? (
+                              <img src={`https://img.youtube.com/vi/${(video.videoUrl || video.youtubeLink).split('v=').pop()?.split('&')[0]}/hqdefault.jpg`} className="w-full h-full object-cover" alt="thumbnail" />
+                            ) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center bg-primary/10 text-primary p-4 text-center">
+                                <Video size={32} className="mb-2" />
+                                <span className="text-[10px] font-bold uppercase">{video.videoType || 'Direct Link'}</span>
+                              </div>
+                            )
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Video size={40} className="text-primary/20" />
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Play size={48} className="text-white" />
+                          </div>
+                        </div>
+                        <CardContent className="p-6 md:p-8">
+                          <div className="mb-4">
+                            <Badge className="bg-primary/10 text-primary border-none uppercase text-[9px] font-black tracking-widest">{video.subject}</Badge>
+                            <h4 className="font-bold text-lg md:text-xl mt-3 line-clamp-2">{video.title}</h4>
+                            <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{video.description}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button variant="outline" className="flex-1 rounded-xl h-10 font-bold" onClick={() => handleEditVideo(video)}>Edit</Button>
+                            <Button variant="outline" className="w-10 h-10 rounded-xl text-destructive hover:bg-destructive/10" onClick={() => handleDeleteVideo(video.id)}>
+                              <Trash2 size={16} />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    {filteredVideos?.length === 0 && (
+                      <div className="col-span-full py-20 text-center border-4 border-dashed rounded-[3rem] bg-muted/20">
+                        <Video size={48} className="mx-auto text-muted-foreground/30 mb-4" />
+                        <p className="font-bold text-muted-foreground uppercase tracking-widest text-xs">No videos found.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </TabsContent>
+
               <TabsContent value="notices" className="mt-0 space-y-6 md:space-y-8">
                 <h3 className="text-xl md:text-2xl font-headline font-bold">Official Bulletins</h3>
                 <div className="grid gap-4">
@@ -2297,6 +2515,110 @@ export default function AdminPage() {
                         placeholder="URL1, URL2, URL3..."
                         className="min-h-[100px] rounded-3xl bg-background/50 p-6 text-xs" 
                       />
+                    </div>
+
+                    <hr className="border-t border-border/40 my-8" />
+
+                    <div className="space-y-4">
+                      <div className="space-y-1">
+                        <Label className="text-lg font-bold">Innovation Section</Label>
+                        <p className="text-sm text-muted-foreground">Manage the content for the dynamic innovation accordion.</p>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Section Title</Label>
+                          <Input 
+                            value={landingPageForm.innovationTitle} 
+                            onChange={e => setLandingPageForm({...landingPageForm, innovationTitle: e.target.value})}
+                            className="h-12 rounded-2xl bg-background/50" 
+                          />
+                        </div>
+                        <div className="space-y-3">
+                          <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Section Subtitle</Label>
+                          <Input 
+                            value={landingPageForm.innovationSubtitle} 
+                            onChange={e => setLandingPageForm({...landingPageForm, innovationSubtitle: e.target.value})}
+                            className="h-12 rounded-2xl bg-background/50" 
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-6 pt-4">
+                        <Label className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Interactive Tabs Content</Label>
+                        {getParsedInnovationTabs().map((tab: any, idx: number) => (
+                          <div key={idx} className="p-6 bg-white dark:bg-black border border-border/40 rounded-3xl space-y-4">
+                            <h4 className="font-bold text-sm text-primary mb-2">Tab {idx + 1}</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label className="text-[10px] font-bold uppercase text-muted-foreground">Title</Label>
+                                <Input value={tab.title || ''} onChange={e => handleInnovationTabChange(idx, 'title', e.target.value)} className="bg-background/50" />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-[10px] font-bold uppercase text-muted-foreground">Short Description</Label>
+                                <Input value={tab.desc || ''} onChange={e => handleInnovationTabChange(idx, 'desc', e.target.value)} className="bg-background/50" />
+                              </div>
+                              <div className="space-y-2 md:col-span-2">
+                                <Label className="text-[10px] font-bold uppercase text-muted-foreground">Expanded Details (Learn More Modal)</Label>
+                                <Textarea value={tab.details || ''} onChange={e => handleInnovationTabChange(idx, 'details', e.target.value)} className="bg-background/50 min-h-[80px]" />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <hr className="border-t border-border/40 my-8" />
+
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label className="text-lg font-bold">Testimonials Section</Label>
+                          <p className="text-sm text-muted-foreground">Manage the content for the user reviews carousel.</p>
+                        </div>
+                        <Button type="button" onClick={addTestimonial} variant="outline" size="sm" className="h-9">
+                          + Add Testimonial
+                        </Button>
+                      </div>
+
+                      <div className="space-y-6 pt-4">
+                        {getParsedTestimonials().map((testimonial: any, idx: number) => (
+                          <div key={idx} className="p-6 bg-white dark:bg-black border border-border/40 rounded-3xl space-y-4 relative">
+                            <Button 
+                              type="button"
+                              onClick={() => removeTestimonial(idx)}
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-4 right-4 h-8 w-8 rounded-full"
+                            >
+                              &times;
+                            </Button>
+                            <h4 className="font-bold text-sm text-primary mb-2">Review #{idx + 1}</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label className="text-[10px] font-bold uppercase text-muted-foreground">Name</Label>
+                                <Input value={testimonial.name || ''} onChange={e => handleTestimonialChange(idx, 'name', e.target.value)} className="bg-background/50" />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-[10px] font-bold uppercase text-muted-foreground">Role / Company</Label>
+                                <Input value={testimonial.role || ''} onChange={e => handleTestimonialChange(idx, 'role', e.target.value)} className="bg-background/50" />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-[10px] font-bold uppercase text-muted-foreground">Avatar Image URL</Label>
+                                <Input value={testimonial.avatarUrl || ''} onChange={e => handleTestimonialChange(idx, 'avatarUrl', e.target.value)} className="bg-background/50" />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-[10px] font-bold uppercase text-muted-foreground">Company Logo URL</Label>
+                                <Input value={testimonial.logoUrl || ''} onChange={e => handleTestimonialChange(idx, 'logoUrl', e.target.value)} className="bg-background/50" />
+                              </div>
+                              <div className="space-y-2 md:col-span-2">
+                                <Label className="text-[10px] font-bold uppercase text-muted-foreground">Testimonial Text</Label>
+                                <Textarea value={testimonial.text || ''} onChange={e => handleTestimonialChange(idx, 'text', e.target.value)} className="bg-background/50 min-h-[80px]" />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
@@ -2892,6 +3214,10 @@ export default function AdminPage() {
                 </div>
               </TabsContent>
 
+              <TabsContent value="bulk-email" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 m-0">
+                <BulkEmailTab />
+              </TabsContent>
+
             </CardContent>
           </Card>
         </Tabs>
@@ -2945,6 +3271,32 @@ export default function AdminPage() {
               <div className="space-y-2"><Label className="text-xs">Start Time</Label><Input type="time" required value={newSession.startTime} onChange={e => setNewSession({...newSession, startTime: e.target.value})} className="h-12 rounded-xl text-xs" /></div>
             </div>
             <DialogFooter><Button type="submit" className="w-full h-12 rounded-xl font-bold text-base md:text-lg">Initialize Session</Button></DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isVideoDialogOpen} onOpenChange={setIsVideoDialogOpen}>
+        <DialogContent className="w-[95vw] rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 sm:max-w-lg">
+          <DialogHeader><DialogTitle className="text-xl md:text-2xl font-headline font-bold">{editingVideo ? 'Update Video' : 'Add New Video'}</DialogTitle></DialogHeader>
+          <form onSubmit={handleSaveVideo} className="space-y-4 md:space-y-6 pt-4">
+            <div className="space-y-2"><Label className="text-xs">Title</Label><Input required value={videoForm.title} onChange={e => setVideoForm({...videoForm, title: e.target.value})} className="h-12 rounded-xl text-sm" /></div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2"><Label className="text-xs">Subject</Label><Input required value={videoForm.subject} onChange={e => setVideoForm({...videoForm, subject: e.target.value})} className="h-12 rounded-xl text-sm" /></div>
+              <div className="space-y-2">
+                <Label className="text-xs">Video Source</Label>
+                <Select value={videoForm.videoType} onValueChange={val => setVideoForm({...videoForm, videoType: val})}>
+                  <SelectTrigger className="h-12 rounded-xl text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="youtube">YouTube</SelectItem>
+                    <SelectItem value="drive">Google Drive</SelectItem>
+                    <SelectItem value="direct">Direct Link / Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2"><Label className="text-xs">Video Link URL</Label><Input required placeholder={videoForm.videoType === 'youtube' ? 'https://youtube.com/watch?v=...' : 'https://drive.google.com/file/d/...'} value={videoForm.videoUrl} onChange={e => setVideoForm({...videoForm, videoUrl: e.target.value})} className="h-12 rounded-xl text-xs" /></div>
+            <div className="space-y-2"><Label className="text-xs">Description (Optional)</Label><Textarea value={videoForm.description} onChange={e => setVideoForm({...videoForm, description: e.target.value})} className="min-h-[80px] rounded-xl text-sm" /></div>
+            <DialogFooter><Button type="submit" className="w-full h-12 rounded-xl font-bold text-base md:text-lg">{editingVideo ? 'Update' : 'Upload'} Video</Button></DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
