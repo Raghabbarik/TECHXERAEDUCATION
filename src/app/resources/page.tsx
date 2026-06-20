@@ -32,8 +32,7 @@ export default function ResourcesPage() {
 
   useEffect(() => {
     if (mounted && !isUserLoading && !user) router.push('/login?redirect=/resources')
-    if (mounted && !isUserLoading && !isProfileLoading && user && profile && !profile.isApproved && !isAdmin) router.push('/dashboard')
-  }, [user, isUserLoading, isProfileLoading, profile, router, mounted, isAdmin])
+  }, [user, isUserLoading, router, mounted])
 
   const resourcesQuery = useMemoFirebase(() => db ? query(collection(db, 'studyMaterials'), orderBy('uploadDate', 'desc')) : null, [db])
   const { data: resources, isLoading: isResourcesLoading } = useCollection(resourcesQuery)
@@ -47,7 +46,7 @@ export default function ResourcesPage() {
     r.materialType.toLowerCase().includes(searchTerm.toLowerCase())
   ) || []
 
-  if (!mounted || isUserLoading || isProfileLoading) {
+  if (!mounted || isUserLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: "linear" }}>
@@ -57,8 +56,14 @@ export default function ResourcesPage() {
     )
   }
 
-  if (!user || (!profile?.isApproved && !isAdmin)) {
-    if (isAdmin) { /* proceed */ } else { return null }
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: "linear" }}>
+          <TechXeraLogo className="w-16 h-16 opacity-50" />
+        </motion.div>
+      </div>
+    )
   }
 
   return (

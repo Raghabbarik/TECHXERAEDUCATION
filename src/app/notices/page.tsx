@@ -33,16 +33,12 @@ export default function NoticesPage() {
     if (mounted && !isUserLoading && !user) {
       router.push('/login?redirect=/notices')
     }
-    // Redirect to dashboard if not approved (and not an admin)
-    if (mounted && !isUserLoading && !isProfileLoading && user && profile && !profile.isApproved && !isAdmin) {
-      router.push('/dashboard')
-    }
-  }, [user, isUserLoading, isProfileLoading, profile, router, mounted, isAdmin])
+  }, [user, isUserLoading, router, mounted])
 
   const noticesQuery = useMemoFirebase(() => query(collection(db, 'notices'), orderBy('publishDate', 'desc')), [db])
   const { data: notices, isLoading } = useCollection(noticesQuery)
 
-  if (!mounted || isUserLoading || isProfileLoading) {
+  if (!mounted || isUserLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: "linear" }}>
@@ -52,14 +48,7 @@ export default function NoticesPage() {
     )
   }
 
-  // Allow Admin OR Approved Students
-  if (!user || (!profile?.isApproved && !isAdmin)) {
-    if (isAdmin) {
-      // Proceed even without profile
-    } else {
-      return null
-    }
-  }
+  if (!user) return null
 
   return (
     <div className="min-h-screen bg-background">

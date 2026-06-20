@@ -24,7 +24,7 @@ import {
   Clock, Calendar as CalendarIcon, FileText, Edit,
   ShieldCheck, Layout, ImageIcon, Globe, Send, XCircle, X,
   Heart, Sparkles, Map, Zap, Award, Code, MessageSquare, Mail,
-  Briefcase, Building2, Play, StickyNote, ChevronDown, ChevronUp, Video
+  Briefcase, Building2, Play, StickyNote, ChevronDown, ChevronUp, Video, Github, Instagram, Linkedin
 } from 'lucide-react'
 import { useFirestore, useUser, useDoc, useMemoFirebase, useAuth, useCollection } from '@/firebase'
 import { collection, doc, setDoc, deleteDoc, query, orderBy, where, updateDoc, getDoc, addDoc, serverTimestamp } from 'firebase/firestore'
@@ -83,7 +83,10 @@ export default function AdminPage() {
     siteName: '',
     logoUrl: '',
     faviconUrl: '',
-    heroDescription: ''
+    heroDescription: '',
+    githubUrl: '',
+    instagramUrl: '',
+    linkedinUrl: ''
   })
 
   const [landingPageForm, setLandingPageForm] = useState({
@@ -310,7 +313,10 @@ export default function AdminPage() {
         siteName: dbSettings.siteName || '',
         logoUrl: dbSettings.logoUrl || '',
         faviconUrl: dbSettings.faviconUrl || '',
-        heroDescription: dbSettings.heroDescription || ''
+        heroDescription: dbSettings.heroDescription || '',
+        githubUrl: dbSettings.githubUrl || '',
+        instagramUrl: dbSettings.instagramUrl || '',
+        linkedinUrl: dbSettings.linkedinUrl || ''
       })
       setLandingPageForm({
         trustSectionEnabled: dbSettings.trustSectionEnabled ?? true,
@@ -2764,6 +2770,36 @@ export default function AdminPage() {
                           value={brandingForm.faviconUrl} 
                           onChange={e => setBrandingForm({...brandingForm, faviconUrl: e.target.value})}
                           placeholder="https://..."
+                          className="h-14 rounded-2xl bg-background/50" 
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      <div className="space-y-3">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Github size={14} /> Github URL</Label>
+                        <Input 
+                          value={brandingForm.githubUrl} 
+                          onChange={e => setBrandingForm({...brandingForm, githubUrl: e.target.value})}
+                          placeholder="https://github.com/..."
+                          className="h-14 rounded-2xl bg-background/50" 
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Instagram size={14} /> Instagram URL</Label>
+                        <Input 
+                          value={brandingForm.instagramUrl} 
+                          onChange={e => setBrandingForm({...brandingForm, instagramUrl: e.target.value})}
+                          placeholder="https://instagram.com/..."
+                          className="h-14 rounded-2xl bg-background/50" 
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Linkedin size={14} /> LinkedIn URL</Label>
+                        <Input 
+                          value={brandingForm.linkedinUrl} 
+                          onChange={e => setBrandingForm({...brandingForm, linkedinUrl: e.target.value})}
+                          placeholder="https://linkedin.com/in/..."
                           className="h-14 rounded-2xl bg-background/50" 
                         />
                       </div>

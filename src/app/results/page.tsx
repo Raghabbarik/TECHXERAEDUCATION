@@ -48,11 +48,7 @@ export default function ResultsLookupPage() {
     if (mounted && !isUserLoading && !user) {
       router.push('/login?redirect=/results')
     }
-    // Redirect to dashboard if not approved (and not an admin)
-    if (mounted && !isUserLoading && !isProfileLoading && user && profile && !profile.isApproved && !isAdmin) {
-      router.push('/dashboard')
-    }
-  }, [user, isUserLoading, isProfileLoading, profile, router, mounted, isAdmin])
+  }, [user, isUserLoading, router, mounted])
 
   const handleLookup = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -121,7 +117,7 @@ export default function ResultsLookupPage() {
     }
   }
 
-  if (!mounted || isUserLoading || isProfileLoading) {
+  if (!mounted || isUserLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: "linear" }}>
@@ -131,14 +127,7 @@ export default function ResultsLookupPage() {
     )
   }
 
-  // Allow Admin OR Approved Students
-  if (!user || (!profile?.isApproved && !isAdmin)) {
-    if (isAdmin) {
-      // Proceed
-    } else {
-      return null
-    }
-  }
+  if (!user) return null
 
   return (
     <div className="min-h-screen relative flex flex-col">

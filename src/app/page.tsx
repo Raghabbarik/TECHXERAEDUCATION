@@ -306,9 +306,9 @@ export default function Home() {
             </Link>
             <p className="text-sm font-medium leading-relaxed max-w-sm">Your all-in-one high-performance campus engine. Empowering students with digital access to excellence.</p>
             <div className="flex gap-4 pt-4">
-              <Link href="#" className="p-2 bg-muted hover:bg-primary/10 hover:text-primary transition-all rounded-lg"><Github size={18} /></Link>
-              <Link href="#" className="p-2 bg-muted hover:bg-primary/10 hover:text-primary transition-all rounded-lg"><Instagram size={18} /></Link>
-              <Link href="#" className="p-2 bg-muted hover:bg-primary/10 hover:text-primary transition-all rounded-lg"><Linkedin size={18} /></Link>
+              <Link href={settings?.githubUrl || "#"} className="p-2 bg-muted hover:bg-primary/10 hover:text-primary transition-all rounded-lg"><Github size={18} /></Link>
+              <Link href={settings?.instagramUrl || "#"} className="p-2 bg-muted hover:bg-primary/10 hover:text-primary transition-all rounded-lg"><Instagram size={18} /></Link>
+              <Link href={settings?.linkedinUrl || "#"} className="p-2 bg-muted hover:bg-primary/10 hover:text-primary transition-all rounded-lg"><Linkedin size={18} /></Link>
             </div>
           </div>
           <div className="space-y-6">

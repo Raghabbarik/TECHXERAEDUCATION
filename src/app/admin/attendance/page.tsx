@@ -47,7 +47,7 @@ export default function AdminAttendancePage() {
   const { toast } = useToast()
 
   const teacherDocRef = useMemoFirebase(() => (db && user ? doc(db, 'teachers', user.uid) : null), [db, user])
-  const { data: teacherData } = useDoc(teacherDocRef)
+  const { data: teacherData, isLoading: isTeacherLoading } = useDoc(teacherDocRef)
   const isAuthorizedAdmin = teacherData?.role === 'admin' || user?.email?.toLowerCase() === 'rraghabbarik@gmail.com'
 
   useEffect(() => {
@@ -193,7 +193,7 @@ export default function AdminAttendancePage() {
 
   const activeSession = sessions?.find(s => s.id === selectedSessionId)
 
-  if (!mounted || isUserLoading || teacherData === undefined) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-primary" size={48} /></div>
+  if (!mounted || isUserLoading || isTeacherLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-primary" size={48} /></div>
   if (!isAuthorizedAdmin) return <div className="min-h-screen flex items-center justify-center font-bold">Access Denied</div>
 
   return (

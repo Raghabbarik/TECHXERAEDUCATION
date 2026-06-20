@@ -98,7 +98,7 @@ export default function InnovationSection() {
             <div
               key={tab.id}
               onMouseEnter={() => setActiveTab(idx)}
-              className={`flex-1 p-6 md:p-8 cursor-pointer transition-all duration-300 relative overflow-hidden group ${
+              className={`flex-1 p-5 md:p-6 cursor-pointer transition-all duration-300 relative overflow-hidden group ${
                 isActive ? `${tab.activeBg} text-black shadow-lg z-10 scale-[1.02] rounded-[2rem]` : 'hover:bg-muted/30 border-r border-border/40 last:border-r-0'
               }`}
             >
@@ -110,7 +110,7 @@ export default function InnovationSection() {
                 </div>
               )}
 
-              <div className="relative z-10 flex flex-col h-full space-y-6">
+              <div className="relative z-10 flex flex-col h-full space-y-4">
                 <div 
                   className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 ${
                     isActive ? 'bg-white text-black' : tab.inactiveIconBg
